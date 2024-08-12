@@ -474,6 +474,7 @@ public:
   void hello();
   void checkMemoryToBLE();
   void clearDataPacket(DATA *trackerData);
+  void setupSensors();
   void updateSensors(DATA *trackerData);
   void printPackage(LORADATA *loraDataPacket);
   void getRequest(String request);
@@ -482,6 +483,7 @@ public:
 private:
   IMemory *_memory;
   BLE_HM10 *_ble;
+  Adafruit_MPU6050 mpu6050;
   void sendAllPackagesToBLE();
   void sendPackageToBLEFromStorage(unsigned int index);
 };
@@ -491,10 +493,9 @@ private:
 
 void AGLORA::setupSensors() {
 
-  // verify connection
-
+  // verify MPU6050 connection
 #if DEBUG_MODE && DEBUG_MPU6050
-  Serial.println("Testing MPU device connections...");
+    Serial.println("Testing MPU device connections...");
 #endif
 
   bool isFound = mpu6050.begin();
