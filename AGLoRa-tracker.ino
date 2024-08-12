@@ -218,12 +218,14 @@ String sendToPhone(DATA *package) {
 // ========================================
 // ==== Settings LEVEL 3 (nightmare) ======
 // ========================================
-#define USE_EEPROM_MEMORY false  // "false" by default
+#define USE_EEPROM_MEMORY true  // "true" by default
 // set "false" to use SRAM memory, "true" to use EEPROM
 // EEPROM is permanent memory, data is not lost even
 // if the system is turned off.
 // But the write operation is finite and usually capped at 100,000 cycles.
 // Please read: https://docs.arduino.cc/learn/programming/memory-guide
+#define RESET_EEPROM_MEMORY_ON_BOOT true
+// set "true" to clear all EEPROM memory on boot
 // ============ LORA NETWORK SETTINGS ============
 #define I_WANT_TO_SEND_MY_LOCATION true  // "true" by default
 #define DATA_SENDING_INTERVAL 30000      // milliseconds
@@ -1231,6 +1233,10 @@ void EEPROMAglora::setup() {
   EEPROMStorageIndex = 0;
   incrementCounter = 0;
   storageOverwrite = false;
+
+  if (RESET_EEPROM_MEMORY_ON_BOOT) {
+    clearAllPositions();
+  }
 
 #if DEBUG_MODE && DEBUG_MEMORY
   Serial.print(F("📀[EEPROM storage: Start EEPROM initialization. Size of memory: "));
