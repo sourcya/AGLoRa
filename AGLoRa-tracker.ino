@@ -91,15 +91,15 @@ const char NAME[NAME_LENGTH] = "Rick";  // Name of current tracker, NAME_LENGTH 
 // "debug mode" through the serial port.
 // Don't forget to disconnect the bluetooth module.
 // Then open “Tools” -> ”Serial monitor” in Arduino IDE.
-#define DEBUG_MODE true  // change "false" to "true" to enable
+#define DEBUG_MODE false  // change "false" to "true" to enable
 // Next, logs levels for comfortable deallbugging,
 // if DEBUG_MODE == false, logs level are not important
-#define DEBUG_BLE false    // bluetooth low energy
-#define DEBUG_GPS true     // print GPS logs
-#define DEBUG_LORA true    // print GPS logs
-#define DEBUG_MEMORY true  // print GPS logs
-#define DEBUG_AGLORA true  // print GPS logs
-#define DEBUG_MPU6050 true
+#define DEBUG_BLE false      // bluetooth low energy
+#define DEBUG_GPS false      // print GPS logs
+#define DEBUG_LORA false     // print GPS logs
+#define DEBUG_MEMORY false   // print GPS logs
+#define DEBUG_AGLORA false   // print GPS logs
+#define DEBUG_MPU6050 false  // print MPU Logs
 
 
 
@@ -495,14 +495,14 @@ void AGLORA::setupSensors() {
 
   // verify MPU6050 connection
 #if DEBUG_MODE && DEBUG_MPU6050
-    Serial.println("Testing MPU device connections...");
+  Serial.println(F("Testing MPU device connections..."));
 #endif
 
   bool isFound = mpu6050.begin();
 
   if (!isFound) {
 #if DEBUG_MODE && DEBUG_MPU6050
-    Serial.println("Failed to find MPU6050 chip");
+    Serial.println(F("Failed to find MPU6050 chip"));
 #endif
   } else {
 
@@ -512,19 +512,19 @@ void AGLORA::setupSensors() {
 
     mpu6050.setAccelerometerRange(MPU6050_RANGE_8_G);
 #if DEBUG_MODE && DEBUG_MPU6050
-    Serial.print("Accelerometer range set to: +-8G");
+    Serial.println(F("Accelerometer range set to: +-8G"));
 #endif
 
 
     mpu6050.setGyroRange(MPU6050_RANGE_500_DEG);
 #if DEBUG_MODE && DEBUG_MPU6050
-    Serial.print("Gyro range set to: +- 500 deg/s");
+    Serial.println(F("Gyro range set to: +- 500 deg/s"));
 #endif
 
 
     mpu6050.setFilterBandwidth(MPU6050_BAND_21_HZ);
 #if DEBUG_MODE && DEBUG_MPU6050
-    Serial.print("Filter bandwidth set to:21 Hz ");
+    Serial.println(F("Filter bandwidth set to:21 Hz "));
 #endif
   }
 }
@@ -824,7 +824,7 @@ void BLE_HM10::send(String *package) {
     package->remove(0, MTU);
     isStringNotEmpty = package->length() != 0;
 
-#if !DEBUG_MODE && !DEBUG_BLE
+#if !(DEBUG_MODE && DEBUG_BLE)
     // important part
     Serial.print(nextSendMTU);  //  here we send data to BLE
     delay(10);
@@ -1231,13 +1231,16 @@ EEPROMAglora::EEPROMAglora() {
 }
 
 void EEPROMAglora::setup() {
-  EEPROMStorageIndex = 0;
-  incrementCounter = 0;
-  storageOverwrite = false;
+
 
   if (RESET_EEPROM_MEMORY_ON_BOOT) {
     clearAllPositions();
   }
+
+
+  EEPROMStorageIndex = 0;
+  incrementCounter = 0;
+  storageOverwrite = false;
 
 #if DEBUG_MODE && DEBUG_MEMORY
   Serial.print(F("📀[EEPROM storage: Start EEPROM initialization. Size of memory: "));
