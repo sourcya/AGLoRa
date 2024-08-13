@@ -706,11 +706,17 @@ void AGLORA::checkMemoryToBLE() {
 void AGLORA::sendPackageToBLE(DATA *trackerData, int index) {
   String response = bleProtocolPrefix + bleProtocolTypePoint + bleProtocolVersion;
 
-  response += sendToPhone(trackerData);
-  response += bleProtocolParamMemoryIndex + index;
+  _ble->send(&response);
+  response = sendToPhone(trackerData);
+    _ble->send(&response);
+  response = bleProtocolParamMemoryIndex + index;
   response += bleProtocolParamCRC;
   response += _memory->checkCRC(index) ? bleProtocolOK : bleProtocolError;
   response += bleProtocolDivider;
+    _ble->send(&response);
+
+  // Serial.print(F("🟢AGLoRa: send point 📦 to BLE → "));
+  // Serial.print(response);
 
 #if DEBUG_MODE && DEBUG_AGLORA
   Serial.print(F("🟢AGLoRa: send point 📦 to BLE → "));
